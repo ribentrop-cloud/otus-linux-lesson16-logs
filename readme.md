@@ -4,6 +4,7 @@ Ip|Servername|Роль|Установленное ПО|Порты
 ---|---|---|---|---
 192.168.50.10|web|Web-сервер|Nginx|TCP 80 - порт nginx
 192.168.50.11|log|Log-сервер|Rsyslog-сервер|UDP 514 - порт Rsyslog
+
 Развертывание стенда происходит с помощью __Vagrant__ и __Ansible__.
 
 ### 1. Настройка сбора логов ОС
@@ -120,6 +121,10 @@ __Проверка:__
 2. На __web-сервере__ выполняем произвольную запись в аудируемый _/etc/nginx/nginx.conf_ :
 ```
 echo '# Just comment for audit checking' >>  /etc/nginx/nginx.conf
+```
+3. На __log-сервере__ смотрим результат:
+```
+tail -f /var/log/messages | grep nginx_conf_audit
 ```
 
 
