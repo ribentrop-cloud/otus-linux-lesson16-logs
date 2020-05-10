@@ -1,0 +1,8 @@
+---
+# handlers file for roles/log
+
+    - name: rsyslog systemd
+      systemd: name=rsyslog enabled=yes state=started
+
+    - name: rsyslog restart
+      service: name=rsyslog state=restarted

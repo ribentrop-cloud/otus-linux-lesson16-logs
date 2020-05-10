@@ -1,0 +1,17 @@
+---
+# handlers file for roles/web
+
+    - name: nginx systemd
+      systemd: name=nginx enabled=yes state=started
+
+    - name: rsyslog systemd
+      systemd: name=rsyslog enabled=yes state=started
+
+    - name: nginx restart
+      service: name=nginx state=restarted
+
+    - name: rsyslog restart
+      service: name=rsyslog state=restarted
+
+#    - name: auditd restart
+#      service: name=auditd state=restarted

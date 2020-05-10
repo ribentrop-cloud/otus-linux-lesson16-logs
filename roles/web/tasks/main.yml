@@ -1,0 +1,84 @@
+---
+# tasks file for roles/web
+    - name: 'install epel-release repo'
+      yum:
+        name: epel-release
+        state: present
+        
+    - name: 'install NETSTAT for testing purposes'
+      yum:
+        name: net-tools
+        state: present
+
+    - name: 'install TMUX for testing purposes'
+      yum:
+        name: tmux
+        state: present
+
+    - name: 'install lsof for testing purposes'
+      yum:
+        name: lsof
+        state: present
+
+    - name: 'install TCPDUMP for testing purposes'
+      yum:
+        name: tcpdump
+        state: present
+
+    - name: 'install RSYSLOG server'
+      yum:
+        name: rsyslog
+        state: present  
+      notify:
+        - rsyslog systemd
+
+    - name: 'install NGINX server'
+      yum:
+        name: nginx
+        state: present  
+      notify:
+        - nginx systemd
+
+    - name: 'send error nginx logs to remote syslog server'
+      replace:
+        path: /etc/nginx/nginx.conf
+        regexp: '^error_log\s+/var/log/nginx/error.log;'
+        replace: 'error_log /var/log/nginx/error.log crit;\nerror_log syslog:server=192.168.50.11:514;'
+
+    - name: 'send access nginx logs to remote syslog server'
+      lineinfile:
+        path: /etc/nginx/nginx.conf
+        regexp: '^\s+access_log\s+/var/log/nginx/access.log\s+main;'
+        line: 'access_log syslog:server=192.168.50.11:514;'
+      notify:
+        - nginx restart
+
+    - name: 'Copy logs_forwarding.conf'
+      template:
+        src: ../templates/logs_forwarding.conf
+        dest: /etc/rsyslog.d/logs_forwarding.conf
+      notify:
+        - rsyslog restart
+
+    - name: 'disable selinux in conf'
+      lineinfile:
+        path: /etc/selinux/config
+        regexp: 'SELINUX=enforcing'
+        line: 'SELINUX=disabled'
+
+    - name: 'disable selinux in cli'
+      shell: setenforce 0
+
+    - name: 'make audit rule'
+      lineinfile:
+        path: /etc/audit/rules.d/audit.rules
+        line: '-w /etc/nginx/nginx.conf -p wa -k nginx_conf_audit'
+#      notify:
+#        - auditd restart
+
+    - name: 'restart audit service'
+      shell: /sbin/service auditd restart
+
+
+
+

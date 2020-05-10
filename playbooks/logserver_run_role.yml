@@ -1,0 +1,5 @@
+---
+- hosts: log
+  become: true
+  roles:
+    - { role: ../roles/log/ }

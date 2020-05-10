@@ -1,0 +1,35 @@
+---
+# tasks file for roles/log
+
+    - name: 'install NETSTAT for testing purposes'
+      yum:
+        name: net-tools
+        state: present
+
+    - name: 'install TMUX for testing purposes'
+      yum:
+        name: tmux
+        state: present
+
+    - name: 'install TCPDUMP for testing purposes'
+      yum:
+        name: tcpdump
+        state: present
+
+    - name: 'install RSYSLOG server'
+      yum:
+        name: rsyslog
+        state: present  
+      notify:
+        - rsyslog systemd
+
+    - name: 'Copy logs_forwarding.conf'
+      template:
+        src: ../templates/RemoteLogsCollection.conf
+        dest: /etc/rsyslog.d/RemoteLogsCollection.conf
+      notify:
+        - rsyslog restart
+
+
+
+
